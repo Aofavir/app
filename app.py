@@ -217,10 +217,10 @@ def edit_jobs(id):
                                           Jobs.user == current_user
                                           ).first()
         if jobs:
-            jobs.job = form.title.data
-            jobs.work_size = form.work_size.data
-            jobs.collaborators = form.collaborators.data
-            jobs.team_leader = form.team_id.data
+            form.title.data = jobs.job
+            form.work_size.data = jobs.work_size
+            form.collaborators.data = jobs.collaborators
+            form.team_id.data = jobs.team_leader
         else:
             abort(404)
     if form.validate_on_submit():

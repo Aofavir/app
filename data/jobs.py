@@ -13,4 +13,4 @@ class Jobs(SqlAlchemyBase):
     work_size = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)
     collaborators = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
-    user = orm.relationship('User')
+    user = orm.relationship("User", back_populates="jobs", foreign_keys=[user_id])
