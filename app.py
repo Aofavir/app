@@ -11,8 +11,9 @@ from wtforms.validators import DataRequired
 from forms.news import NewsForm
 from forms.user import RegisterForm
 from forms.jobs import JobsForm
-
+import flask
 from data import db_session, news_api
+from requests import get
 
 app = Flask(__name__)
 app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
@@ -240,8 +241,8 @@ def edit_jobs(id):
                            form=form
                            )
 
-
 if __name__ == '__main__':
     db_session.global_init("db/blogs.db")
     app.register_blueprint(news_api.blueprint)
     app.run(port=8080, host='127.0.0.1')
+    print(get('http://localhost:5000/api/news').json())
