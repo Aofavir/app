@@ -25,6 +25,12 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
+def main():
+    db_session.global_init("db/blogs.db")
+    app.register_blueprint(news_api.blueprint)
+    app.run()
+
+
 class LoginForm(FlaskForm):
     email = EmailField('Почта', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
@@ -42,7 +48,8 @@ def load_user(user_id):
 def index():
     db_sess = db_session.create_session()
     news = db_sess.query(News).filter(News.is_private != True)
-    return render_template("index.html", news=news)
+    jobs = db_sess.query(Jobs)
+    return render_template("index.html", news=news, jobs=jobs)
 
 
 @app.route("/cookie_test")
@@ -241,8 +248,20 @@ def edit_jobs(id):
                            form=form
                            )
 
+
+@app.route('/jobs_delete/<int:id>', methods=['GET', 'POST'])
+@login_required
+def jobs_delete(id):
+    db_sess = db_session.create_session()
+    jobs = db_sess.query(Jobs).filter(Jobs.id == id, Jobs.user == current_user).first()
+    if jobs:
+        db_sess.delete(jobs)
+        db_sess.commit()
+    else:
+        abort(404)
+    return redirect('/')
+
+
 if __name__ == '__main__':
     db_session.global_init("db/blogs.db")
-    app.register_blueprint(news_api.blueprint)
     app.run(port=8080, host='127.0.0.1')
-    print(get('http://localhost:5000/api/news').json())
