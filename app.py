@@ -12,17 +12,10 @@ from forms.news import NewsForm
 from forms.user import RegisterForm
 from forms.jobs import JobsForm
 import flask
-from data import db_session, news_api
+from data import db_session, news_api, jobs_api
 from requests import get
+from settings import *
 
-app = Flask(__name__)
-app.config['PERMANENT_SESSION_LIFETIME'] = datetime.timedelta(days=365)
-app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
-
-db_session.global_init("db/blogs.db")
-
-login_manager = LoginManager()
-login_manager.init_app(app)
 
 
 def main():
@@ -207,7 +200,6 @@ def add_job():
         jobs.team_leader = form.team_id.data
         current_user.jobs.append(jobs)
         db_sess.merge(current_user)
-        db_sess.commit()
         db_sess.add(jobs)
         db_sess.commit()
         return redirect('/')
@@ -264,4 +256,6 @@ def jobs_delete(id):
 
 if __name__ == '__main__':
     db_session.global_init("db/blogs.db")
+    app.register_blueprint(news_api.blueprint)
+    app.register_blueprint(jobs_api.blueprint)
     app.run(port=8080, host='127.0.0.1')
